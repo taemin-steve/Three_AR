@@ -1,63 +1,68 @@
 import * as THREE from '/node_modules/three/build/three.module.js';
-import { BoxLineGeometry } from './node_modules/three/examples/jsm/geometries/BoxLineGeometry.js';
-import { XRButton } from './node_modules/three/examples/jsm/webxr/XRButton.js';
-import { XRControllerModelFactory } from './node_modules/three/examples/jsm/webxr/XRControllerModelFactory.js';
-// import * as THREE from 'three';
-			import { ARButton } from './node_modules/three/examples/jsm/webxr/ARButton.js';
 
-			let camera, scene, renderer;
-			let controller;
+// ./node_modules/three/examples/jsm/  << ~~~addons/
+
+
+			import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+
+			let camera, scene, renderer, video;
 
 			init();
 			animate();
 
 			function init() {
 
-				const container = document.createElement( 'div' );
-				document.body.appendChild( container );
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.z = 0.01;
 
 				scene = new THREE.Scene();
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+				video = document.getElementById( 'video' );
 
-				const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 3 );
-				light.position.set( 0.5, 1, 0.25 );
-				scene.add( light );
+				const texture = new THREE.VideoTexture( video );
 
-				//
+				const geometry = new THREE.PlaneGeometry( 16, 9 );
+				geometry.scale( 0.5, 0.5, 0.5 );
+				
 
-				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.useLegacyLights = false;
-				renderer.xr.enabled = true;
-				container.appendChild( renderer.domElement );
+				document.body.appendChild( renderer.domElement );
 
-				//
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.enableZoom = false;
+				controls.enablePan = false;
 
-				document.body.appendChild( ARButton.createButton( renderer ) );
+        scene.background = texture;
 
-				//
-
-				const geometry = new THREE.CylinderGeometry( 0, 0.05, 0.2, 32 ).rotateX( Math.PI / 2 );
-
-				function onSelect() {
-
-					const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
-					const mesh = new THREE.Mesh( geometry, material );
-					mesh.position.set( 0, 0, - 0.3 ).applyMatrix4( controller.matrixWorld );
-					mesh.quaternion.setFromRotationMatrix( controller.matrixWorld );
-					scene.add( mesh );
-
-				}
-
-				controller = renderer.xr.getController( 0 );
-				controller.addEventListener( 'select', onSelect );
-				scene.add( controller );
-
-				//
 
 				window.addEventListener( 'resize', onWindowResize );
+				//
+
+				if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) {
+
+					const constraints = { video: { width: 1280, height: 720, facingMode: 'environment' } };
+
+					navigator.mediaDevices.getUserMedia( constraints ).then( function ( stream ) {
+
+						// apply the stream to the video element used in the texture
+
+						video.srcObject = stream;
+						video.play();
+
+					} ).catch( function ( error ) {
+
+						console.error( 'Unable to access the camera/webcam.', error );
+
+					} );
+
+				} else {
+
+					console.error( 'MediaDevices interface not available.' );
+
+				}
 
 			}
 
@@ -70,16 +75,9 @@ import { XRControllerModelFactory } from './node_modules/three/examples/jsm/webx
 
 			}
 
-			//
-
 			function animate() {
 
-				renderer.setAnimationLoop( render );
-
-			}
-
-			function render() {
-
+				requestAnimationFrame( animate );
 				renderer.render( scene, camera );
 
 			}
