@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>camera calibration</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <!-- get opencv scripts-->
+
+    <style>
+      div {
+        width: 100%;
+        height: 700px;
+        border: 1px solid #003458;
+      }
+      div.left {
+        width: 50%;
+        float: left;
+        box-sizing: border-box;
+      }
+      div.right {
+        width: 50%;
+        float: right;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script
+      async
+      src="https://docs.opencv.org/4.5.4/opencv.js"
+      onload="openCvReady();"
+      type="text/javascript"
+    ></script>
+
+    <script type="text/JavaScript">
+      function openCvReady() {
+        cv["onRuntimeInitialized"] = () => {
+          const video = document.querySelector("#deviceCamera");
+
+          if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices
+              .getUserMedia({ video: { facingMode: "environment" } })
+              .then((stream) => {
+                video.srcObject = stream;
+                // video.play();
+              })
+              .catch(function (error) {
+                console.log("Something went wrong!");
+                console.log(error);
+                return;
+              });
+          }
+          let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
+          let dst = new cv.Mat(video.height, video.width, cv.CV_8UC1);
+          let cap = new cv.VideoCapture(video);
+          let streaming = true;
+
+          const FPS = 30;
+          function processVideo() {
+            if (!streaming) {
+              // clean and stop.
+              src.delete();
+              dst.delete();
+              return;
+            }
+            let begin = Date.now();
+            // start processing.
+            cap.read(src); // 원본 비디오 읽고,
+            cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY); // gray 컬러 적용.
+            let patternSize = new cv.Size(5, 5);
+            //cv.solvePnPRansac()
+
+            let corners = new cv.Mat();
+            //Result = cv.solvePnP();
+            //console.log(Result.returnValue);
+            //sconsole.log(Result.corners);
+
+            cv.imshow("canvasOutput", dst); // canvas에 gray적용한거 출력
+            // schedule the next one.
+            let delay = 1000 / FPS - (Date.now() - begin);
+            setTimeout(processVideo, delay);
+          }
+          // schedule the first one.
+          setTimeout(processVideo, 0);
+        };
+      }
+    </script>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../node_modules/three/build/three.module.js",
+          "three/addons/": "../node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+
+    <div>
+      <div class="left">
+        왼쪽
+        <video
+          id="deviceCamera"
+          autoplay="true"
+          width="300"
+          height="600"
+        ></video>
+      </div>
+      <!-- 왼쪽엔 비디오가 진행될 것.-->
+      <div class="right">
+        오른쪽
+        <!-- 오른쪽에선 체커보드 판별!-->
+        <canvas id="canvasOutput" width="300" height="600"> </canvas>
+      </div>
+    </div>
+  </body>
+</html>
