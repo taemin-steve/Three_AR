@@ -3,25 +3,15 @@ import * as THREE from '/node_modules/three/build/three.module.js';
 // ./node_modules/three/examples/jsm/  << ~~~addons/
 
 // import {cv} from "./node_modules/opencv/opencv.js"
-import {cv} from './node_modules/opencv.js/opencv.js';
-import cv from './node_modules/opencv.js/opencv.js';
-
-
-
-import('./node_modules/opencv.js/opencv.js').then(cv => {
-	// Use OpenCV.js functions and objects here
-	const mat = new cv.Mat(10, 10, cv.CV_8UC3);
-	console.log('OpenCV.js version:',  cv.getBuildInformation());
-	// Perform image processing operations using OpenCV.js
-  }).catch(error => {
-	console.log('erro');
-	// Handle any errors that occurred while loading OpenCV.js
-  });
+// import {cv} from './node_modules/opencv.js/opencv.js';
+// import cv from './node_modules/opencv.js/opencv.js';
+// import {cv} from './opencv.js';
 
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 let camera, scene, renderer, video;
 init();
 animate();
+
 
 function init() {
 	camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
@@ -38,6 +28,7 @@ function init() {
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
+	console.log(window.innerWidth, window.innerHeight);
 	renderer.useLegacyLights = false;
 	document.body.appendChild( renderer.domElement );
 
@@ -73,3 +64,5 @@ function animate() {
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
+
+// let ws = new WebSocket()
