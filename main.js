@@ -64,5 +64,41 @@ function animate() {
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
-
+///////////////////////////////////////////////////
 // let ws = new WebSocket()
+
+// var url = "ws://localhost:60000";
+// var ws = new WebSocket(url);
+
+// settingWebSocket();
+
+// function settingWebSocket() {
+// 	ws.binaryType = "arraybuffer"; // binary type을 array buffer로 설정.
+// 	ws.onopen = function () {
+// 	  console.log("Websocket is connected.");
+// 	};
+  
+// 	ws.onmessage = function (msg) {
+// 	  console.log(msg.data); //서버로부터 받는 메세지.
+// 	};
+//   }
+///////////////////////////////////////////////////////////////////
+// import dgram from '/dgram';
+
+// const server = dgram.createSocket('udp4');
+
+// server.on('error', (err) => {
+//   console.log(`server error:\n${err.stack}`);
+//   server.close();
+// });
+
+// server.on('message', (msg, rinfo) => {
+//   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+// });
+
+// server.on('listening', () => {
+//   const address = server.address();
+//   console.log(`server listening ${address.address}:${address.port}`);
+// });
+
+// server.bind(8888);
