@@ -1,40 +1,17 @@
-// websocket
-var url = "ws://localhost:3000";
-var ws = new WebSocket(url);
+// b/node_modules/@miniflare/http-server/dist/src/index.js
+import { WebSocketServer } from '/node_modules/ws/wrapper.mjs';
 
-// 웹소켓 셋팅
-function settingWebSocket() {
+// const ws = await import("ws");
+// const WebSocketServer = ws.WebSocketServer ?? ws.default.WebSocketServer;
 
-	ws.binaryType = "arraybuffer";
-	
-	ws.onopen = function () {
-	  console.log("Websocket is connected.");
-	};
-  
-	ws.onmessage = function (msg) {
-	  console.log(msg.data); //서버로부터 받는 메세지.
-	};
-  }
+const wss = new WebSocketServer({ port: 8765 });
 
-settingWebSocket();
+wss.on('connection', function connection(ws) {
+  ws.on('error', console.error);
 
+  ws.on('message', function message(data) {
+    console.log('received: %s', data);
+  });
 
-// import dgram from 'dgram';
-
-// const server = dgram.createSocket('udp4');
-
-// server.on('error', (err) => {
-//   console.log(`server error:\n${err.stack}`);
-//   server.close();
-// });
-
-// server.on('message', (msg, rinfo) => {
-//   console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-// });
-
-// server.on('listening', () => {
-//   const address = server.address();
-//   console.log(`server listening ${address.address}:${address.port}`);
-// });
-
-// server.bind(8888);
+  ws.send('something');
+});

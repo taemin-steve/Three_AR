@@ -2,6 +2,9 @@
   "dependencies": {
     "dgram": "^1.0.1",
     "opencv.js": "^1.2.1",
-    "three": "^0.154.0"
+    "three": "^0.154.0",
+    "ws": "^8.13.0"
   }
+  ,
+  "type": "module"
 }
